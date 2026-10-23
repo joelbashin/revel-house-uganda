@@ -1,0 +1,808 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  
+  /* African-inspired color palette */
+  --color-canvas: #F4E7D3;
+  --color-ink: #121417;
+  --color-green: #556B2F;
+  --color-orange: #D35400;
+  --color-teal: #B36B00;
+  --color-coral: #8B1E1E;
+  --color-cream: #F4E7D3;
+}
+
+/* ============================================================
+   AFRICAN-INSPIRED THEME TOKENS (Light default - warm savanna tones)
+   ============================================================ */
+:root {
+  /* Page / canvas backgrounds - warm savanna tones */
+  --c-bg: #F4E7D3;          /* warm cream / sunlight canvas */
+  --c-surface: #FEFCF8;     /* cards / light warm surfaces */
+  --c-soft: #E8DCC8;        /* soft earth sections */
+  --c-soft-2: #DED0B8;      /* deeper soft section tint */
+
+  /* Text - deep earth tones */
+  --c-ink: #121417;         /* primary text - deep charcoal */
+  --c-ink-soft: #3B2F2F;    /* soft body text - earth brown */
+
+  /* Lines & borders - subtle earth lines */
+  --c-line: #3B2F2F18;      /* default hairline border (8% earth brown) */
+
+  /* Overlays / glass - warm gold-tinted */
+  --c-overlay: #00000066;
+
+  /* Brand accents - African sunset palette */
+  --c-green: #556B2F;           /* olive green - African vegetation */
+  --c-green-deep: #3B4F1E;      /* deep olive */
+  --c-orange: #D35400;          /* sunset orange - primary warm accent */
+  --c-golden: #F4A300;          /* golden yellow - highlights */
+  --c-teal: #B36B00;            /* ochre brown - earthy accent */
+  --c-coral: #8B1E1E;           /* deep red - secondary accent */
+  --c-earth: #3B2F2F;           /* earth brown */
+  --c-sunset-gradient: linear-gradient(135deg, #8B1E1E, #D35400, #F4A300);
+  --c-earth-gradient: linear-gradient(135deg, #3B2F2F, #B36B00, #D35400);
+}
+
+/* ============================================================
+   AFRICAN DARK THEME — Premium charcoal with sunset accents
+   ============================================================ */
+.dark {
+  --c-bg: #121417;          /* deep charcoal - primary background */
+  --c-surface: #1A1E25;     /* dark slate - cards and panels */
+  --c-soft: #242A34;        /* soft sections - dark blue-gray */
+  --c-soft-2: #1A1E25;      /* deeper soft section tint */
+
+  --c-ink: #F4E7D3;         /* primary text - warm cream */
+  --c-ink-soft: #D4C4A8;    /* soft body text - light earth */
+
+  --c-line: #2F3239;        /* card border - muted dark gray */
+
+  --c-overlay: #00000099;
+
+  /* African accent colors stay vivid in dark mode */
+  --c-green: #556B2F;           /* olive green */
+  --c-green-deep: #6B8B3F;      /* deeper olive for contrast */
+  --c-orange: #D35400;          /* sunset orange */
+  --c-golden: #F4A300;          /* golden yellow */
+  --c-teal: #B36B00;            /* ochre brown */
+  --c-coral: #8B1E1E;           /* deep red */
+  --c-earth: #3B2F2F;           /* earth brown */
+  --c-sunset-gradient: linear-gradient(135deg, #8B1E1E, #D35400, #F4A300);
+  --c-earth-gradient: linear-gradient(135deg, #3B2F2F, #B36B00, #D35400);
+}
+
+body {
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
+  background-color: var(--c-bg);
+  color: var(--c-ink);
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apply theme tokens to the app shell + smooth transition */
+html, body, #root {
+  background-color: var(--c-bg);
+  color: var(--c-ink);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Theme-aware scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--c-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #B36B00;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D35400;
+}
+
+.font-editorial {
+  font-family: "DM Serif Display", Georgia, serif;
+}
+
+/* ============================================================
+   AFRICAN GEOMETRIC PATTERNS (Subtle decorative elements)
+   ============================================================ */
+.african-pattern-1 {
+  background-image: 
+    linear-gradient(135deg, transparent 40%, rgba(212, 84, 0, 0.03) 40%, rgba(212, 84, 0, 0.03) 60%, transparent 60%),
+    linear-gradient(45deg, transparent 40%, rgba(244, 163, 0, 0.02) 40%, rgba(244, 163, 0, 0.02) 60%, transparent 60%),
+    linear-gradient(135deg, transparent 48%, rgba(139, 30, 30, 0.02) 48%, rgba(139, 30, 30, 0.02) 52%, transparent 52%),
+    linear-gradient(45deg, transparent 48%, rgba(85, 107, 47, 0.02) 48%, rgba(85, 107, 47, 0.02) 52%, transparent 52%);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px, 6px 6px, 18px 18px;
+}
+
+.african-pattern-2 {
+  background-image: 
+    linear-gradient(180deg, transparent 48%, rgba(179, 107, 0, 0.04) 48%, rgba(179, 107, 0, 0.04) 52%, transparent 52%),
+    linear-gradient(90deg, transparent 48%, rgba(212, 84, 0, 0.03) 48%, rgba(212, 84, 0, 0.03) 52%, transparent 52%);
+  background-size: 16px 16px;
+}
+
+.african-pattern-3 {
+  background-image: 
+    linear-gradient(60deg, transparent 45%, rgba(139, 30, 30, 0.03) 45%, rgba(139, 30, 30, 0.03) 55%, transparent 55%),
+    linear-gradient(-60deg, transparent 45%, rgba(85, 107, 47, 0.02) 45%, rgba(85, 107, 47, 0.02) 55%, transparent 55%),
+    linear-gradient(180deg, transparent 48%, rgba(244, 163, 0, 0.02) 48%, rgba(244, 163, 0, 0.02) 52%, transparent 52%);
+  background-size: 32px 32px;
+}
+
+/* ============================================================
+   AFRICAN GLOW EFFECTS (Golden-hour light)
+   ============================================================ */
+.glow-sunset {
+  box-shadow: 0 0 20px rgba(212, 84, 0, 0.1), 0 0 40px rgba(244, 163, 0, 0.05);
+}
+
+.glow-golden {
+  box-shadow: 0 0 20px rgba(244, 163, 0, 0.1), 0 0 40px rgba(179, 107, 0, 0.05);
+}
+
+.glow-earth {
+  box-shadow: 0 0 20px rgba(59, 47, 47, 0.15), 0 0 40px rgba(59, 47, 47, 0.08);
+}
+
+/* ============================================================
+   AFRICAN BUTTON STYLES
+   ============================================================ */
+.btn-african-primary {
+  background: linear-gradient(135deg, #D35400, #F4A300);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(212, 84, 0, 0.2);
+}
+
+.btn-african-primary:hover {
+  background: linear-gradient(135deg, #F4A300, #D35400);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(212, 84, 0, 0.3);
+}
+
+.btn-african-secondary {
+  background: linear-gradient(135deg, #3B2F2F, #B36B00);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.btn-african-secondary:hover {
+  background: linear-gradient(135deg, #B36B00, #3B2F2F);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   AFRICAN CARD STYLES
+   ============================================================ */
+.card-african {
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.card-african:hover {
+  border-color: rgba(212, 84, 0, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 20px rgba(212, 84, 0, 0.05);
+}
+
+/* ============================================================
+   AFRICAN TEXT STYLES
+   ============================================================ */
+.text-african-accent {
+  background: linear-gradient(135deg, #D35400, #F4A300);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-african-earth {
+  background: linear-gradient(135deg, #3B2F2F, #B36B00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   AFRICAN BORDER STYLES
+   ============================================================ */
+.border-african {
+  border-image: linear-gradient(135deg, #8B1E1E, #D35400, #F4A300) 1;
+}
+
+.border-african-subtle {
+  border-image: linear-gradient(135deg, rgba(139, 30, 30, 0.3), rgba(212, 84, 0, 0.3), rgba(244, 163, 0, 0.3)) 1;
+}
+
+/* Living Breathing Ambient Motion Keyframes */
+@keyframes naturalBreathe {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes naturalBreatheSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1.5deg) scale(1.03);
+  }
+}
+
+@keyframes auraBreathe {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes pulseGently {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes africanGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(212, 84, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(244, 163, 0, 0.15);
+  }
+}
+
+.animate-breathe {
+  animation: naturalBreathe 6.5s ease-in-out infinite;
+}
+
+.animate-breathe-slow {
+  animation: naturalBreatheSlow 9.5s ease-in-out infinite;
+}
+
+.animate-aura-breathe {
+  animation: auraBreathe 7s ease-in-out infinite;
+}
+
+.animate-pulse-gently {
+  animation: pulseGently 3.5s ease-in-out infinite;
+}
+
+.animate-african-glow {
+  animation: africanGlow 4s ease-in-out infinite;
+}
+
+/* ============================================================
+   AFRICAN DECORATIVE ELEMENTS
+   ============================================================ */
+.african-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D35400, #F4A300, #D35400, transparent);
+  opacity: 0.3;
+}
+
+.african-dot {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #D35400, #F4A300);
+  border-radius: 50%;
+  animation: pulseGently 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   3D RENDERING & SCROLL EFFECTS
+   ============================================================ */
+/* Global perspective stage for immersive 3D reveals */
+.scene-3d {
+  perspective: 1200px;
+  perspective-origin: 50% 30%;
+}
+
+.scene-3d-preserve {
+  transform-style: preserve-3d;
+}
+
+/* 3D tilt card effect */
+.tilt-3d {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt-3d:hover {
+  transform: perspective(900px) rotateX(4deg) rotateY(-3deg) translateZ(18px);
+}
+
+/* Fluid ripple / wave background */
+.wave-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 60% at 20% 20%, rgba(212, 84, 0, 0.06) 0%, transparent 60%),
+    radial-gradient(50% 50% at 80% 70%, rgba(244, 163, 0, 0.06) 0%, transparent 60%),
+    radial-gradient(40% 40% at 50% 100%, rgba(179, 107, 0, 0.05) 0%, transparent 60%);
+  opacity: 0.6;
+  animation: fluidFlow 14s ease-in-out infinite alternate;
+}
+
+@keyframes fluidFlow {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-2%, 1%, 0) scale(1.02);
+  }
+}
+
+/* Fluid flow line animation */
+.flow-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(244, 163, 0, 0.08), transparent);
+  animation: flowSweep 3.5s ease-in-out infinite;
+}
+
+@keyframes flowSweep {
+  0% {
+    left: -40%;
+  }
+  60%, 100% {
+    left: 140%;
+  }
+}
+
+/* Subtle floating particles */
+@keyframes floatParticle {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.1;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-40px) translateX(15px);
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.4;
+  }
+}
+
+.particle-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 163, 0, 0.7), transparent 70%);
+  opacity: 0.1;
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+/* Moroccan / African woven line for section dividers */
+.african-weave {
+  position: relative;
+  height: 1px;
+  background: transparent;
+}
+.african-weave::before,
+.african-weave::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent, rgba(212, 84, 0, 0.15), transparent);
+}
+.african-weave::before { left: 0; transform: skewX(-20deg); }
+.african-weave::after { right: 0; transform: skewX(20deg); }
+
+/* Gradient text shimmer (african sunset sweep) */
+.shimmer-text {
+  background: linear-gradient(90deg, #D35400, #F4A300, #D35400, #B36B00, #D35400);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmerMove 5s linear infinite;
+}
+
+@keyframes shimmerMove {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================================
+   SPONSORSHIP PHOTOGRAPHIC ARCHIVE — horizontal gallery
+   ============================================================ */
+@keyframes galleryFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes galleryFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gallery-fade-up {
+  animation: galleryFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gallery-fade-in {
+  animation: galleryFadeIn 0.4s ease both;
+}
+
+.gallery-card {
+  transition: box-shadow 0.35s ease;
+}
+
+.gallery-cap {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.gallery-card[data-focus="1"] .gallery-cap {
+  opacity: 1;
+}
+
+.gallery-card .gallery-img {
+  transition: opacity 0.45s ease;
+}
+
+.gallery-img-loaded {
+  opacity: 1 !important;
+}
+
+.gallery-open-hint {
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.gallery-card[data-focus="1"]:hover .gallery-open-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gallery-card[data-focus="1"] .gallery-img {
+  filter: brightness(1);
+}
+
+.gallery-ctrl,
+.gallery-link {
+  transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  opacity: 0.85;
+}
+
+.gallery-root:hover .gallery-ctrl,
+.gallery-root:hover .gallery-link {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .gallery-open-hint {
+    display: none;
+  }
+}
+
+/* ============================================================
+   EDITORIAL GALLERY MASONRY — Asymmetric magazine layout
+   ============================================================ */
+.editorial-gallery {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 7px;
+}
+
+/* Desktop: asymmetric masonry rows */
+@media (min-width: 768px) {
+  /* Pattern repeats every 9 items */
+  .editorial-gallery > :nth-child(9n+1) {
+    grid-column: span 7;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+2) {
+    grid-column: span 5;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+3) {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+4) {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+5) {
+    grid-column: span 4;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+6) {
+    grid-column: span 5;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+7) {
+    grid-column: span 7;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+8) {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+  .editorial-gallery > :nth-child(9n+9) {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+
+  /* Varying heights for editorial feel */
+  .editorial-gallery > :nth-child(9n+1) .gallery-grid-item > div {
+    height: 320px;
+  }
+  .editorial-gallery > :nth-child(9n+2) .gallery-grid-item > div {
+    height: 320px;
+  }
+  .editorial-gallery > :nth-child(9n+3) .gallery-grid-item > div {
+    height: 260px;
+  }
+  .editorial-gallery > :nth-child(9n+4) .gallery-grid-item > div {
+    height: 260px;
+  }
+  .editorial-gallery > :nth-child(9n+5) .gallery-grid-item > div {
+    height: 260px;
+  }
+  .editorial-gallery > :nth-child(9n+6) .gallery-grid-item > div {
+    height: 300px;
+  }
+  .editorial-gallery > :nth-child(9n+7) .gallery-grid-item > div {
+    height: 300px;
+  }
+  .editorial-gallery > :nth-child(9n+8) .gallery-grid-item > div {
+    height: 340px;
+  }
+  .editorial-gallery > :nth-child(9n+9) .gallery-grid-item > div {
+    height: 340px;
+  }
+}
+
+/* Tablet: simpler 2-column */
+@media (min-width: 640px) and (max-width: 767px) {
+  .editorial-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .editorial-gallery > :nth-child(odd) .gallery-grid-item > div {
+    height: 280px;
+  }
+  .editorial-gallery > :nth-child(even) .gallery-grid-item > div {
+    height: 220px;
+  }
+}
+
+/* Mobile: single column */
+@media (max-width: 639px) {
+  .editorial-gallery {
+    grid-template-columns: 1fr;
+  }
+  .editorial-gallery > * .gallery-grid-item > div {
+    height: 260px;
+  }
+}
+
+/* ============================================================
+   GLASS BUTTON — Premium frosted-glass UI element
+   ============================================================ */
+.glass-btn {
+  --glass-bg: rgba(255, 255, 255, 0.32);
+  --glass-border: rgba(255, 255, 255, 0.82);
+  --glass-highlight: rgba(255, 255, 255, 0.90);
+  --glass-text: #111111;
+  --glass-shadow: rgba(180, 180, 185, 0.16);
+  --glass-radius: 44px;
+  --glass-blur: 18px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+
+  width: 370px;
+  height: 138px;
+  padding: 0 48px;
+  box-sizing: border-box;
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+
+  box-shadow:
+    inset 0 1px 1px var(--glass-highlight),
+    inset 1px 0 1px rgba(255, 255, 255, 0.55),
+    0 12px 20px rgba(185, 185, 190, 0.10),
+    0 22px 38px var(--glass-shadow);
+
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  line-height: 1;
+  color: var(--glass-text);
+  text-align: center;
+
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 180ms ease-out, transform 180ms ease-out, box-shadow 180ms ease-out;
+}
+
+.glass-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.32),
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.10)
+  );
+  pointer-events: none;
+}
+
+.glass-btn-label {
+  position: relative;
+  z-index: 2;
+}
+
+.glass-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.40);
+  transform: translateY(-2px);
+}
+
+.glass-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 1px var(--glass-highlight),
+    inset 1px 0 1px rgba(255, 255, 255, 0.55),
+    0 6px 10px rgba(185, 185, 190, 0.08),
+    0 10px 18px var(--glass-shadow);
+}
+
+.glass-btn:focus-visible {
+  outline: 2px solid #69B53F;
+  outline-offset: 3px;
+}
+
+.glass-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Small variant for floating / compact contexts */
+.glass-btn--sm {
+  width: auto;
+  min-width: 180px;
+  height: 52px;
+  padding: 0 28px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  border-radius: 26px;
+  box-shadow:
+    inset 0 1px 1px var(--glass-highlight),
+    inset 1px 0 1px rgba(255, 255, 255, 0.55),
+    0 6px 12px rgba(185, 185, 190, 0.10),
+    0 12px 22px var(--glass-shadow);
+}
+
+.glass-btn--sm:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.glass-btn--sm:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Glass button nav variant for sidebars and menus */
+.glass-btn-nav {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transition: background 180ms ease-out;
+}
+
+.glass-btn-nav:hover {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+/* Responsive — Tablet */
+@media (max-width: 768px) {
+  .glass-btn:not(.glass-btn--sm) {
+    width: min(370px, 75vw);
+    height: 110px;
+    font-size: 36px;
+    padding: 0 36px;
+  }
+}
+
+/* Responsive — Mobile */
+@media (max-width: 480px) {
+  .glass-btn:not(.glass-btn--sm) {
+    width: calc(100vw - 40px);
+    height: 88px;
+    font-size: 28px;
+    padding: 0 24px;
+  }
+}
+
+/* Fallback for no backdrop-filter */
+@supports not (backdrop-filter: blur(18px)) {
+  .glass-btn {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}

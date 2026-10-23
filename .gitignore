@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.vercel/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
