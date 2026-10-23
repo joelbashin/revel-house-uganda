@@ -1,5 +1,7 @@
 <div align="center">
-
+to get api keys for the ai to work go to openrauter api
+   and gemni api
+   
 </div>
 
 
