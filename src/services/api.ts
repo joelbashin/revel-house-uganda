@@ -42,31 +42,15 @@ import {
   getSiteSettings,
   updateSiteSettings,
 } from './siteSettingsService';
+import {
+  createContactSubmission,
+  createVolunteerSubmission,
+  createPartnerSubmission,
+  createDonationPledge,
+  getDonations as fsGetDonations,
+  getSubmissionsSummary as fsGetSubmissionsSummary,
+} from './submissionsService';
 
-// localStorage helpers for forms/submissions
-const STORAGE_KEYS = {
-  CONTACTS: 'rhu_submissions_contacts',
-  VOLUNTEERS: 'rhu_submissions_volunteers',
-  PARTNERS: 'rhu_submissions_partners',
-  DONATIONS: 'rhu_submissions_donations',
-};
-
-function getStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function setStorage<T>(key: string, val: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(val));
-  } catch {
-    // ignore
-  }
-}
 
 // Helper: try async fn, fall back to fallback value
 async function withFallback<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
@@ -159,33 +143,16 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 }
 
 export async function submitContactForm(data: Omit<ContactSubmission, 'id' | 'createdAt' | 'status'>): Promise<{ success: boolean; id: string; message: string }> {
-  await new Promise((res) => setTimeout(res, 400));
-  const contacts = getStorage<ContactSubmission[]>(STORAGE_KEYS.CONTACTS, []);
-  const newSubmission: ContactSubmission = {
-    ...data,
-    id: 'contact-' + Date.now(),
-    createdAt: new Date().toISOString(),
-    status: 'UNREAD',
-  };
-  contacts.unshift(newSubmission);
-  setStorage(STORAGE_KEYS.CONTACTS, contacts);
+  const id = await createContactSubmission(data);
   return {
     success: true,
-    id: newSubmission.id,
+    id,
     message: 'Thank you for reaching out to Revel House Uganda. A coordinator will respond shortly.',
   };
 }
 
 export async function submitVolunteerForm(data: Omit<VolunteerSubmission, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> {
-  await new Promise((res) => setTimeout(res, 400));
-  const volunteers = getStorage<VolunteerSubmission[]>(STORAGE_KEYS.VOLUNTEERS, []);
-  const newApp: VolunteerSubmission = {
-    ...data,
-    id: 'vol-' + Date.now(),
-    createdAt: new Date().toISOString(),
-  };
-  volunteers.unshift(newApp);
-  setStorage(STORAGE_KEYS.VOLUNTEERS, volunteers);
+  await createVolunteerSubmission(data);
   return {
     success: true,
     message: 'Your volunteer application has been received. Our community coordinator will review your profile.',
@@ -193,15 +160,7 @@ export async function submitVolunteerForm(data: Omit<VolunteerSubmission, 'id' |
 }
 
 export async function submitPartnerForm(data: Omit<PartnerSubmission, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> {
-  await new Promise((res) => setTimeout(res, 400));
-  const partners = getStorage<PartnerSubmission[]>(STORAGE_KEYS.PARTNERS, []);
-  const newPartner: PartnerSubmission = {
-    ...data,
-    id: 'part-' + Date.now(),
-    createdAt: new Date().toISOString(),
-  };
-  partners.unshift(newPartner);
-  setStorage(STORAGE_KEYS.PARTNERS, partners);
+  await createPartnerSubmission(data);
   return {
     success: true,
     message: 'Partnership inquiry registered. Our leadership team looks forward to connecting with your organization.',
@@ -209,31 +168,16 @@ export async function submitPartnerForm(data: Omit<PartnerSubmission, 'id' | 'cr
 }
 
 export async function createDonation(data: Omit<DonationSubmission, 'id' | 'createdAt' | 'transactionRef' | 'status'>): Promise<{ success: boolean; transactionRef: string; message: string }> {
-  await new Promise((res) => setTimeout(res, 600));
-  const donations = getStorage<DonationSubmission[]>(STORAGE_KEYS.DONATIONS, []);
-  const ref =
-    'RHU-' +
-    Math.random().toString(36).substring(2, 8).toUpperCase() +
-    '-' +
-    Math.floor(1000 + Math.random() * 9000);
-  const record: DonationSubmission = {
-    ...data,
-    id: 'don-' + Date.now(),
-    transactionRef: ref,
-    createdAt: new Date().toISOString(),
-    status: 'COMPLETED',
-  };
-  donations.unshift(record);
-  setStorage(STORAGE_KEYS.DONATIONS, donations);
+  const { transactionRef } = await createDonationPledge(data);
   return {
     success: true,
-    transactionRef: ref,
-    message: 'Thank you for your generous commitment to community empowerment in Uganda.',
+    transactionRef,
+    message: 'Your pledge has been recorded. It will be marked as a completed donation only after our finance team verifies the bank transfer.',
   };
 }
 
 export async function getDonations(): Promise<DonationSubmission[]> {
-  return getStorage<DonationSubmission[]>(STORAGE_KEYS.DONATIONS, []);
+  return fsGetDonations();
 }
 
 export async function getSubmissionsSummary(): Promise<{
@@ -242,20 +186,5 @@ export async function getSubmissionsSummary(): Promise<{
   partners: PartnerSubmission[];
   donations: DonationSubmission[];
 }> {
-  return {
-    contacts: getStorage<ContactSubmission[]>(STORAGE_KEYS.CONTACTS, []),
-    volunteers: getStorage<VolunteerSubmission[]>(STORAGE_KEYS.VOLUNTEERS, []),
-    partners: getStorage<PartnerSubmission[]>(STORAGE_KEYS.PARTNERS, []),
-    donations: getStorage<DonationSubmission[]>(STORAGE_KEYS.DONATIONS, []),
-  };
-}
-
-export function resetCMSData(): void {
-  Object.values(STORAGE_KEYS).forEach((k) => {
-    try {
-      localStorage.removeItem(k);
-    } catch {
-      // ignore
-    }
-  });
+  return fsGetSubmissionsSummary();
 }

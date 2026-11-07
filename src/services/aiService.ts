@@ -1,6 +1,18 @@
 import { buildPublicKnowledgeContext } from './aiContextService';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { auth, db } from '../firebase/config';
+
+async function getAdminAuthHeaders(): Promise<Record<string, string>> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('You must be signed in as an administrator.');
+  }
+  const token = await user.getIdToken();
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+}
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -66,7 +78,7 @@ export async function generateAdminContent(
 ): Promise<string> {
   const response = await fetch('/api/ai/generate-content', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAdminAuthHeaders(),
     body: JSON.stringify(input),
   });
 
@@ -86,7 +98,7 @@ export async function generateAdminContent(
       topic: input.topic,
       prompt: input,
       generatedContent: generated,
-      createdBy: adminUid || 'admin',
+      createdBy: adminUid || auth.currentUser?.uid || 'unknown',
       status: 'draft',
       createdAt: serverTimestamp(),
     });
@@ -107,7 +119,7 @@ export async function generateAdminArticle(
 ): Promise<ArticleAssistantResponse> {
   const response = await fetch('/api/ai/generate-article', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAdminAuthHeaders(),
     body: JSON.stringify(input),
   });
 
@@ -126,7 +138,7 @@ export async function generateAdminArticle(
       topic: input.topic || input.title || 'Article Assistance',
       prompt: input,
       generatedContent: data,
-      createdBy: adminUid || 'admin',
+      createdBy: adminUid || auth.currentUser?.uid || 'unknown',
       status: 'draft',
       createdAt: serverTimestamp(),
     });

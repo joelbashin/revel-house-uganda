@@ -1,35 +1,33 @@
 // Standalone admin setup script — run with: npx tsx src/scripts/setupAdmin.ts
-// No project imports (avoids import.meta.env issues in Node)
+// Uses the Firebase Admin SDK; credentials come from FIREBASE_SERVICE_ACCOUNT
+// (JSON) or Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS).
 
-import { initializeApp } from 'firebase/app';
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import {
-  doc,
-  getFirestore,
-  serverTimestamp,
-  setDoc,
-} from 'firebase/firestore';
+import 'dotenv/config';
+import { cert, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
-// Firebase config — same values as .env
-const firebaseConfig = {
-  apiKey:            'AIzaSyA4YnE4Lz1lVozZwQvsPsxO8pr_lDQbuiU',
-  authDomain:        'revel-5818b.firebaseapp.com',
-  projectId:         'revel-5818b',
-  storageBucket:     'revel-5818b.firebasestorage.app',
-  messagingSenderId: '723226388374',
-  appId:             '1:723226388374:web:1feeef8870f31bc5b89fb7',
-};
+const projectId = process.env.FIREBASE_PROJECT_ID || 'revel-5818b';
+const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
 
-const ADMIN_EMAIL    = 'admin@revelhouseuganda.org';
-const ADMIN_PASSWORD = process.env.SETUP_ADMIN_PASSWORD || 'Revel@2026!';
+const ADMIN_EMAIL = process.env.SETUP_ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.SETUP_ADMIN_PASSWORD;
 
-const app = initializeApp(firebaseConfig);
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  console.error('SETUP_ADMIN_EMAIL and SETUP_ADMIN_PASSWORD are required.');
+  process.exit(1);
+}
+if (ADMIN_PASSWORD.length < 12) {
+  console.error('SETUP_ADMIN_PASSWORD must be at least 12 characters.');
+  process.exit(1);
+}
+
+const app = serviceAccountJson
+  ? initializeApp({ credential: cert(JSON.parse(serviceAccountJson)), projectId })
+  : initializeApp({ projectId });
+
 const auth = getAuth(app);
-const db  = getFirestore(app);
+const db = getFirestore(app);
 
 // ── inline seed data (copied from cmsData.ts / sponsorshipGallery.ts) ─────────
 
@@ -452,40 +450,40 @@ const galleryPhotos = [
 async function seedCollection(name: string, items: any[]): Promise<number> {
   for (const item of items) {
     const { id, ...rest } = item;
-    await setDoc(doc(db, name, id), {
+    await db.collection(name).doc(id).set({
       ...rest,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
   }
   return items.length;
 }
 
 async function main() {
-  // 1. Create or sign in Firebase Auth user
+  // 1. Create the Firebase Auth user if it does not exist yet.
   let user;
   try {
-    const created = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
-    user = created.user;
-    console.log('Created Firebase Auth user:', ADMIN_EMAIL, '| uid:', user.uid);
+    user = await auth.getUserByEmail(ADMIN_EMAIL);
+    console.log('Found Firebase Auth user:', ADMIN_EMAIL, '| uid:', user.uid);
   } catch (err: any) {
-    if (err.code === 'auth/email-already-in-use') {
-      console.log('User already exists — signing in...');
-      const signedIn = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
-      user = signedIn.user;
-      console.log('Signed in. uid:', user.uid);
-    } else {
-      throw err;
-    }
+    if (err.code !== 'auth/user-not-found') throw err;
+    user = await auth.createUser({
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
+      emailVerified: true,
+    });
+    console.log('Created Firebase Auth user:', ADMIN_EMAIL, '| uid:', user.uid);
   }
 
-  // 2. Write admins/{uid} document
-  await setDoc(doc(db, 'admins', user.uid), {
+  await auth.setCustomUserClaims(user.uid, { ...(user.customClaims || {}), admin: true });
+
+  // 2. Write admins/{uid} document (rules deny all client writes).
+  await db.collection('admins').doc(user.uid).set({
     email: ADMIN_EMAIL,
     role: 'admin',
     active: true,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   }, { merge: true });
   console.log('Wrote admins/' + user.uid);
 
@@ -503,17 +501,17 @@ async function main() {
   console.log('Seeded impact stats:', stats);
 
   // 4. Seed site_settings/global
-  await setDoc(doc(db, 'site_settings', 'global'), {
+  await db.collection('site_settings').doc('global').set({
     ...orgSettings,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   }, { merge: true });
   console.log('Seeded site_settings/global');
 
   // 5. Seed gallery
   let galleryCount = 0;
   for (const photo of galleryPhotos) {
-    await setDoc(doc(db, 'sponsorship_photos', photo.id), {
+    await db.collection('sponsorship_photos').doc(photo.id).set({
       image_path: photo.image,
       aspect_ratio: photo.ratio,
       title: photo.title,
@@ -524,8 +522,8 @@ async function main() {
       description: photo.description,
       link: null,
       display_order: parseInt(photo.id.replace('photo-', ''), 10),
-      created_at: serverTimestamp(),
-      updated_at: serverTimestamp(),
+      created_at: FieldValue.serverTimestamp(),
+      updated_at: FieldValue.serverTimestamp(),
     }, { merge: true });
     galleryCount++;
   }
@@ -537,7 +535,6 @@ async function main() {
   console.log('  SETUP COMPLETE');
   console.log('========================================');
   console.log('Admin email:    ', ADMIN_EMAIL);
-  console.log('Admin password: ', ADMIN_PASSWORD);
   console.log('Programs:       ', progs);
   console.log('Projects:       ', projs);
   console.log('Articles:       ', arts);

@@ -49,7 +49,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ settings, onNavigate }
 
     // Open WhatsApp directly
     try {
-      window.open(whatsappUrl, '_blank');
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     } catch {
       // Ignore window.open errors
     }

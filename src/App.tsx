@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -8,7 +8,6 @@ import {
   getArticles,
   getImpactStats,
   getTeamMembers,
-  resetCMSData,
 } from './services/api';
 import {
   OrganizationSettings,

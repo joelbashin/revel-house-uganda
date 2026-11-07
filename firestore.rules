@@ -6,25 +6,74 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function adminDoc() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
+    }
+
     function isAdmin() {
       return isSignedIn()
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+        && adminDoc().role == "admin"
+        && adminDoc().active == true;
     }
 
-    function isOwnAdminCreate(uid) {
-      return isSignedIn()
-        && request.auth.uid == uid
-        && request.resource.data.role == "admin"
-        && request.resource.data.active == true;
+    function isNonEmptyString(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
     }
 
+    function validContact(data) {
+      return data.keys().hasOnly(['name', 'email', 'phone', 'subject', 'message', 'status', 'createdAt'])
+        && isNonEmptyString(data.name, 120)
+        && isNonEmptyString(data.email, 254)
+        && isNonEmptyString(data.message, 5000)
+        && (!data.keys().hasAny(['phone']) || (data.phone is string && data.phone.size() <= 40))
+        && (!data.keys().hasAny(['subject']) || (data.subject is string && data.subject.size() <= 200))
+        && data.status == 'UNREAD'
+        && data.createdAt != null;
+    }
+
+    function validVolunteer(data) {
+      return data.keys().hasOnly(['fullName', 'email', 'phone', 'location', 'areaOfInterest', 'availability', 'skills', 'createdAt'])
+        && isNonEmptyString(data.fullName, 120)
+        && isNonEmptyString(data.email, 254)
+        && isNonEmptyString(data.location, 200)
+        && isNonEmptyString(data.areaOfInterest, 120)
+        && isNonEmptyString(data.availability, 120)
+        && (!data.keys().hasAny(['phone']) || (data.phone is string && data.phone.size() <= 40))
+        && (!data.keys().hasAny(['skills']) || (data.skills is string && data.skills.size() <= 3000))
+        && data.createdAt != null;
+    }
+
+    function validPartner(data) {
+      return data.keys().hasOnly(['organizationName', 'contactPerson', 'email', 'phone', 'partnerType', 'message', 'createdAt'])
+        && isNonEmptyString(data.organizationName, 200)
+        && isNonEmptyString(data.contactPerson, 120)
+        && isNonEmptyString(data.email, 254)
+        && isNonEmptyString(data.partnerType, 120)
+        && isNonEmptyString(data.message, 5000)
+        && (!data.keys().hasAny(['phone']) || (data.phone is string && data.phone.size() <= 40))
+        && data.createdAt != null;
+    }
+
+    function validDonation(data) {
+      return data.keys().hasOnly(['amount', 'frequency', 'designation', 'donorName', 'donorEmail', 'paymentMethod', 'phone', 'anonymous', 'transactionRef', 'status', 'createdAt'])
+        && data.amount is number && data.amount >= 1 && data.amount <= 1000000
+        && data.frequency in ['one-time', 'monthly']
+        && isNonEmptyString(data.designation, 200)
+        && isNonEmptyString(data.donorName, 120)
+        && isNonEmptyString(data.donorEmail, 254)
+        && data.paymentMethod == 'bank_transfer'
+        && data.anonymous is bool
+        && isNonEmptyString(data.transactionRef, 40)
+        && data.status == 'PENDING'
+        && (!data.keys().hasAny(['phone']) || (data.phone is string && data.phone.size() <= 40))
+        && data.createdAt != null;
+    }
+
+    // Admin records are provisioned only by the Firebase Admin SDK.
     match /admins/{uid} {
       allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
-      allow create: if isOwnAdminCreate(uid);
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow write: if false;
     }
 
     match /programs/{programId} {
@@ -79,6 +128,29 @@ service cloud.firestore {
 
     match /ai_generated_content/{contentId} {
       allow read, create, update, delete: if isAdmin();
+    }
+
+    // Public forms: anyone may create a validated record, only admins may read or manage it.
+    match /contact_submissions/{submissionId} {
+      allow create: if validContact(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /volunteer_submissions/{submissionId} {
+      allow create: if validVolunteer(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /partner_submissions/{submissionId} {
+      allow create: if validPartner(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Donations are recorded as pending pledges. Only a server-side payment
+    // confirmation may ever mark one COMPLETED.
+    match /donations/{donationId} {
+      allow create: if validDonation(request.resource.data);
+      allow read, update, delete: if isAdmin();
     }
 
     match /{document=**} {

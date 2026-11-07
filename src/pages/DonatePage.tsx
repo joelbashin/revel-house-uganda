@@ -101,7 +101,7 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialDesignation, onNa
         }),
       });
     } catch {
-      alert('Simulation error. Please try again.');
+      alert('We could not record your pledge. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -144,10 +144,10 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialDesignation, onNa
                   Thank You for Your Generosity
                 </span>
                 <h2 className="font-editorial text-3xl sm:text-4xl text-[var(--c-ink)]">
-                  Donation Confirmed
+                  Donation Pledge Recorded
                 </h2>
                 <p className="text-xs sm:text-sm text-[var(--c-ink)]/70 mt-2 max-w-md mx-auto">
-                  A formal tax receipt has been simulated and logged in the organizational database.
+                  Your pledge is recorded as pending. A donation is confirmed only after our finance team receives and verifies the bank transfer.
                 </p>
               </div>
 
@@ -177,7 +177,7 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialDesignation, onNa
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[var(--c-ink)]/20 text-xs font-semibold hover:bg-black/5 transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print Receipt</span>
+                  <span>Print Pledge Summary</span>
                 </button>
                 <button
                   onClick={() => { setReceipt(null); }}
@@ -372,7 +372,7 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialDesignation, onNa
                       </div>
                     </div>
                     <p className="text-[10px] text-[var(--c-ink)]/50 pt-1">
-                      Complete your bank wire using these verified details. Your contribution receipt logs above upon confirmation.
+                      Complete your bank wire using these verified details. Your pledge reference is recorded above; it becomes a confirmed donation once the transfer is verified.
                     </p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialDesignation, onNa
                   <Heart className="w-4 h-4 fill-current" />
                   <span>
                     {isProcessing
-                      ? 'Confirming Commitment...'
+                      ? 'Recording Pledge...'
                       : `Donate $${finalAmount} USD ${frequency === 'monthly' ? '/ month' : ''}`}
                   </span>
                   <ArrowRight className="w-4 h-4" />
