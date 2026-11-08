@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     return sendError(res, 503, 'Authorization service is temporarily unavailable.');
   }
 
-  const limit = rateLimit(`generate-article:${admin.uid}`, { limit: 20, windowMs: 60_000 });
+  const limit = await rateLimit(`generate-article:${admin.uid}`, { limit: 20, windowMs: 60_000 });
   if (!limit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', limit.retryAfter);
   }

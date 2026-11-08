@@ -27,7 +27,7 @@ function json(status, body, extraHeaders = {}) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  const limit = rateLimit(`chat:${clientKey(request)}`, { limit: 30, windowMs: 60_000 });
+  const limit = await rateLimit(`chat:${clientKey(request)}`, { limit: 30, windowMs: 60_000 }, env);
   if (!limit.allowed) {
     return json(429, { error: 'Too many requests. Please try again shortly.' }, {
       'Retry-After': String(limit.retryAfter),

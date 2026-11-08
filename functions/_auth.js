@@ -53,7 +53,10 @@ async function fetchJwks(force = false) {
   jwksInFlight = (async () => {
     let response;
     try {
-      response = await fetch(JWKS_URL, { headers: { Accept: 'application/json' } });
+      response = await fetch(JWKS_URL, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(5000),
+      });
     } catch {
       throw new AuthError(503, 'Authorization service is temporarily unavailable.');
     }
@@ -169,6 +172,7 @@ export async function requireAdmin(request, env) {
   try {
     response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      signal: AbortSignal.timeout(5000),
     });
   } catch {
     throw new AuthError(503, 'Authorization service is temporarily unavailable.');

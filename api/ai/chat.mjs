@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
   res.setHeader('Cache-Control', 'no-store');
 
-  const limit = rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
+  const limit = await rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
   if (!limit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', limit.retryAfter);
   }

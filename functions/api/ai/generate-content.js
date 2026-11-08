@@ -22,7 +22,7 @@ function json(status, body, extraHeaders = {}) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  const ipLimit = rateLimit(`gen-content-ip:${clientKey(request)}`, { limit: 60, windowMs: 60_000 });
+  const ipLimit = await rateLimit(`gen-content-ip:${clientKey(request)}`, { limit: 60, windowMs: 60_000 }, env);
   if (!ipLimit.allowed) {
     return json(429, { error: 'Too many requests. Please try again shortly.' }, {
       'Retry-After': String(ipLimit.retryAfter),
@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
     return json(503, { error: 'Authorization service is temporarily unavailable.' });
   }
 
-  const limit = rateLimit(`gen-content:${admin.uid}`, { limit: 20, windowMs: 60_000 });
+  const limit = await rateLimit(`gen-content:${admin.uid}`, { limit: 20, windowMs: 60_000 }, env);
   if (!limit.allowed) {
     return json(429, { error: 'Too many requests. Please try again shortly.' }, {
       'Retry-After': String(limit.retryAfter),

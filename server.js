@@ -91,7 +91,7 @@ app.get('/api/health', (req, res) => {
 
 // 1. Public Chat Endpoint ("Ask Revel House")
 app.post('/api/ai/chat', async (req, res) => {
-  const limit = rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
+  const limit = await rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
   if (!limit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', limit.retryAfter);
   }
@@ -127,7 +127,7 @@ app.post('/api/ai/chat', async (req, res) => {
 
 // 2. Admin Content Generator Endpoint
 app.post('/api/ai/generate-content', async (req, res) => {
-  const ipLimit = rateLimit(`gen-content-ip:${clientKey(req)}`, { limit: 60, windowMs: 60_000 });
+  const ipLimit = await rateLimit(`gen-content-ip:${clientKey(req)}`, { limit: 60, windowMs: 60_000 });
   if (!ipLimit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', ipLimit.retryAfter);
   }
@@ -141,7 +141,7 @@ app.post('/api/ai/generate-content', async (req, res) => {
     return sendError(res, 503, 'Authorization service is temporarily unavailable.');
   }
 
-  const limit = rateLimit(`gen-content:${admin.uid}`, { limit: 20, windowMs: 60_000 });
+  const limit = await rateLimit(`gen-content:${admin.uid}`, { limit: 20, windowMs: 60_000 });
   if (!limit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', limit.retryAfter);
   }
@@ -184,7 +184,7 @@ Please generate a high-quality draft for this ${contentType}.
 
 // 3. Admin Article Assistant Endpoint
 app.post('/api/ai/generate-article', async (req, res) => {
-  const ipLimit = rateLimit(`gen-article-ip:${clientKey(req)}`, { limit: 60, windowMs: 60_000 });
+  const ipLimit = await rateLimit(`gen-article-ip:${clientKey(req)}`, { limit: 60, windowMs: 60_000 });
   if (!ipLimit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', ipLimit.retryAfter);
   }
@@ -198,7 +198,7 @@ app.post('/api/ai/generate-article', async (req, res) => {
     return sendError(res, 503, 'Authorization service is temporarily unavailable.');
   }
 
-  const limit = rateLimit(`gen-article:${admin.uid}`, { limit: 20, windowMs: 60_000 });
+  const limit = await rateLimit(`gen-article:${admin.uid}`, { limit: 20, windowMs: 60_000 });
   if (!limit.allowed) {
     return sendError(res, 429, 'Too many requests. Please try again shortly.', limit.retryAfter);
   }

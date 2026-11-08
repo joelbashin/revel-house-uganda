@@ -113,7 +113,7 @@ function aiDevPlugin(): Plugin {
 
           try {
             if (endpoint === '/api/ai/chat') {
-              const limit = rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
+              const limit = await rateLimit(`chat:${clientKey(req)}`, { limit: 30, windowMs: 60_000 });
               if (!limit.allowed) {
                 return sendError(429, 'Too many requests. Please try again shortly.', limit.retryAfter);
               }
@@ -151,7 +151,7 @@ function aiDevPlugin(): Plugin {
               endpoint === '/api/ai/generate-content' ||
               endpoint === '/api/ai/generate-article'
             ) {
-              const ipLimit = rateLimit(`ai-admin-ip:${clientKey(req)}`, {
+              const ipLimit = await rateLimit(`ai-admin-ip:${clientKey(req)}`, {
                 limit: 60,
                 windowMs: 60_000,
               });
@@ -167,7 +167,7 @@ function aiDevPlugin(): Plugin {
                 throw err;
               }
 
-              const limit = rateLimit(`${endpoint}:${admin.uid}`, {
+              const limit = await rateLimit(`${endpoint}:${admin.uid}`, {
                 limit: 20,
                 windowMs: 60_000,
               });
