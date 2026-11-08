@@ -18,7 +18,7 @@ const COLLECTION = 'projects';
 export async function getProjects(): Promise<Project[]> {
   const q = query(collection(db, COLLECTION), orderBy('title', 'asc'));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Project));
+  return snap.docs.map((d) => ({ published: true, id: d.id, ...d.data() } as Project));
 }
 
 export async function getPublishedProjects(statusFilter?: string): Promise<Project[]> {

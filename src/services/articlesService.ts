@@ -18,7 +18,7 @@ const COLLECTION = 'articles';
 export async function getArticles(): Promise<Article[]> {
   const q = query(collection(db, COLLECTION), orderBy('publishedDate', 'desc'));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Article));
+  return snap.docs.map((d) => ({ published: true, id: d.id, ...d.data() } as Article));
 }
 
 export async function getPublishedArticles(): Promise<Article[]> {

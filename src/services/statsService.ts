@@ -18,7 +18,7 @@ const COLLECTION = 'stats';
 export async function getStats(): Promise<ImpactStat[]> {
   const q = query(collection(db, COLLECTION), orderBy('displayOrder', 'asc'));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as ImpactStat));
+  return snap.docs.map((d) => ({ published: true, id: d.id, ...d.data() } as ImpactStat));
 }
 
 export async function getPublishedStats(): Promise<ImpactStat[]> {
